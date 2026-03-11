@@ -80,3 +80,39 @@ jobs:
         echo "Starting fake deployment..."
         ls deployed_app
         echo "Application deployed successfully (simulation)."
+  deploy:
+    needs: fake_deploy
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifact
+
+    - name: Unzip artifact
+      run: unzip build-artifact.zip -d deployed_app
+
+    - name: Upload to GitHub Pages
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: deployed_app
+
+  deploy_pages:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
