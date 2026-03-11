@@ -51,7 +51,7 @@ jobs:
         cp package.json artifact/
         cp package-lock.json artifact/
         cp -R __tests__ artifact/
-
+        cp index.html artifact/
     - name: Zip artifact
       run: |
         cd artifact
