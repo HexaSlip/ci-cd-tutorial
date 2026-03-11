@@ -24,3 +24,41 @@ jobs:
 
     - name: Run tests
       run: npm test
+
+  build_artifact:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install production dependencies
+      run: npm install --production
+
+    - name: Create artifact directory
+      run: mkdir artifact
+
+    - name: Copy project files
+      run: |
+        cp app.js artifact/
+        cp index.js artifact/
+        cp package.json artifact/
+        cp package-lock.json artifact/
+        cp -R __tests__ artifact/
+
+    - name: Zip artifact
+      run: |
+        cd artifact
+        zip -r ../build-artifact.zip .
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifact
+        path: build-artifact.zip
