@@ -62,3 +62,21 @@ jobs:
       with:
         name: build-artifact
         path: build-artifact.zip
+  fake_deploy:
+    needs: build_artifact
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifact
+
+    - name: Unzip artifact
+      run: unzip build-artifact.zip -d deployed_app
+
+    - name: Simulate deployment
+      run: |
+        echo "Starting fake deployment..."
+        ls deployed_app
+        echo "Application deployed successfully (simulation)."
